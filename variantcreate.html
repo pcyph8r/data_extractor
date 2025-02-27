@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 5px;
+        }
+        input[type="checkbox"] {
+            margin-left: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Filter criteria</h2>
+    <form id="filter">
+        <input type="hidden" id="viewname" name="viewname" value="i_customer">
+        <input type="hidden" id="variantname" name="variantname" value="KNA1_EXT">
+        <input type="hidden" id="extractname" name="extractname" value="MARA_EXT">
+        <button name="action" value="savevariant" type="submit">Save</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Field Name</th>
+                    <th>Select Option</th>
+                    <th>Field Low Value</th>
+                    <th>Field High Value</th>
+                </tr>
+            </thead>
+            <tbody>
+            <!-- Form rows will be dynamically generated -->
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+        const dropdownValues = ["Choose Select Option", "EQ", "BT", "CP", "LE", "GE", "NE", "NB", "NP", "GT", "LT"];
+        
+        function toggleInput(checkbox, inputIdlow, inputIdhigh) {
+            var inputField_low = document.getElementById(inputIdlow);
+            var inputField_high = document.getElementById(inputIdhigh);
+            inputField_low.disabled = !checkbox.checked;
+            inputField_high.disabled = !checkbox.checked;
+        }
+        
+ function generateFormRows(fields, predefinedValues) {
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = ''; // Clear existing rows
+
+    fields.forEach(field => {
+        const row = document.createElement('tr');
+
+        // Get predefined values if available
+        let checkboxChecked = predefinedValues[field] ? 'checked' : '';
+        let selectValue = predefinedValues[field]?.selectOption || '';
+        let lowValue = predefinedValues[field]?.lowValue || '';
+        let highValue = predefinedValues[field]?.highValue || '';
+        let disabledAttr = predefinedValues[field] ? '' : 'disabled';
+
+        row.innerHTML = `
+            <td>
+                <input id="checkbox_${field}" type="checkbox" ${checkboxChecked} onclick='toggleInput(this, "${field}_low","${field}_high" )'>
+            </td>
+            <td>${field}</td>
+            <td>
+                <select id="dropdown_${field}" name="dropdown_${field}"></select>
+            </td>
+            <td>
+                <input type="text" id="${field}_low" name="${field}_low" placeholder="Enter value" value="${lowValue}" ${disabledAttr}>
+            </td>
+            <td>
+                <input type="text" id="${field}_high" name="${field}_high" placeholder="Enter value" value="${highValue}" ${disabledAttr}>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+
+        // Populate dropdown
+        const selectElement = document.getElementById(`dropdown_${field}`);
+        dropdownValues.forEach(value => {
+            let option = document.createElement("option");
+            option.value = value;
+            option.text = value;
+            if (value === selectValue) {
+                option.selected = true;
+            }
+            selectElement.appendChild(option);
+        });
+    });
+}
+
+window.onload = function () {
+    console.log("Window loaded");
+
+    const dynamicFields = ['CUSTOMER', 'NUMBER' , 'CUSTOMERNAME', 'CUSTOMERFULLNAME', 'BPCUSTOMERNAME', 'BPCUSTOMERFULLNAME'];
+
+    // Predefined values for specific fields
+    const predefinedValues = { CUSTOMER: { selectOption: "EQ", lowValue: "123", highValue: "456" },
+                                NUMBER: { selectOption: "EQ", lowValue: "123", highValue: "456" },
+                               BPCUSTOMERNAME: {    selectOption: "BT",    lowValue: "PHq", highValue: "XYZ" }    };
+
+    generateFormRows(dynamicFields, predefinedValues);
+};
+
+    </script>
+</body>
+</html>
