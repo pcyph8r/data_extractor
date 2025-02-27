@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    
+    <meta charset="UTF-8">    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Generic Extract Initial Screen</title>    
+    <style>        
+        .mainbody {            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;        
+        }
+        .container {            
+            padding: 20px;            
+            background-color: #fff;            
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);    
+            border-radius: 10px;
+            text-align: center;
+        }
+        .header {            
+            padding: 10px;            
+            color: white;            
+            background-color: blue;  
+            border-radius: 5px;    
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+        .fields {            
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: left;
+            align-items: center;
+        }
+        .fields label {
+            text-align: right;
+            padding-right: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+        }
+        .fields input, .fields select {
+            width: 250px;
+            padding: 5px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: none;
+            outline: none;
+            transition: border-bottom 0.3s ease;
+            text-align: center;
+        }
+        .fields input:focus, .fields select:focus {
+            border-bottom: 2px solid #000;
+        }
+        .buttons {            
+            margin-top: 100px;            
+            display: inline-block;            
+            justify-content: space-between;            
+            gap: 20px;        
+        }    
+        .criteriaBtn {
+            border: none;
+            background: none;
+            color: blue;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .criteriaBtn:disabled {
+            color: grey;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="mainBody">    
+    <div class="container">        
+        <div class="header">            
+            <h1>Generic Extract</h1>        
+        </div>        
+        <div class="content">            
+            <form id='firstpage'>                
+                <div class="fields">                    
+                    <label for="extractname">Extract Name : </label>
+                    <input type="text" name='extractname' id="extractname" placeholder="Enter Extract Name" required>
+                    <label for="viewname">View Name : </label>
+                    <input type="text" name='viewname' id="viewname" placeholder="Enter View Name" required>
+                </div>
+                <div class="fields">
+                    <label for="variantname">Variant Name : </label>
+                    <select id="variantname" name="dropdown">                            
+                        <option value="">-- Create a variant --</option>                        
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button name='action' type="submit" id="edittemp" value="editvariant" class="criteriaBtn" disabled>Edit Template</button>
+                    <button name='action' type="submit" id="createtemp" value="createvariant" class="criteriaBtn" disabled>Create Template</button>
+                </div>  
+            </form>
+        </div>    
+    </div>  
+    <script>
+        const storedData = {
+            "gm_extract": ["DEFAULT "],
+            "oh_extract": ["DEFAULT_OH "],
+            "tg_extract": ["DEFAULT "],
+            "pt_extract": ["DEFAULT "],
+            "table_mara_ext": ["MARA_EXT "],
+            "table_kna1_ext": ["KNA1_EXT "],
+            "kna1_ext": ["KNA1_FL "]
+        };
+       
+        const textInput = document.getElementById("extractname");
+        const viewInput = document.getElementById("viewname");
+        const dropdown = document.getElementById("variantname");
+        const editButton = document.getElementById("edittemp");
+        const createButton = document.getElementById("createtemp");
+
+        function updateButtons() {
+            const extractValue = textInput.value.trim();
+            const viewValue = viewInput.value.trim();
+            const dropdownValue = dropdown.value;
+
+            createButton.disabled = !(dropdownValue === "" && extractValue && viewValue);
+            editButton.disabled = !(dropdownValue !== "" && extractValue && viewValue);
+        }
+
+        textInput.addEventListener("input", updateButtons);
+        viewInput.addEventListener("input", updateButtons);
+        dropdown.addEventListener("change", updateButtons);
+
+        textInput.addEventListener("input", function () {
+            const inputValue = textInput.value.toLowerCase();
+            dropdown.innerHTML = '<option value="">-- Create a Variant --</option>';
+            if (storedData[inputValue]) {
+                storedData[inputValue].forEach(option => {
+                    const newOption = document.createElement("option");
+                    newOption.value = option;
+                    newOption.text = option;
+                    dropdown.appendChild(newOption);
+                });
+            }
+        });
+       
+    </script>
+</body>
+</html>
